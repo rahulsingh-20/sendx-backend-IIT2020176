@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crawled Page</title>
+  </head>
+  <body>
+    url: <input type="text" id="urlInput" />
+    <input type="checkbox" id="payingCustomer" /> Paying
+    <button onclick="crawlPage()">Crawl</button>
+
+    <div id="result"></div>
+
+    <script>
+      // Function to update the content on the page
+      function updateContent(content) {
+        const resultDiv = document.getElementById("result");
+
+        // Create a new div to hold the content
+        const newContentDiv = document.createElement("div");
+        newContentDiv.innerHTML = `<h2>Page Content:</h2><pre>${content}</pre>`;
+
+        // Append the new content div to the existing result div
+        resultDiv.appendChild(newContentDiv);
+      }
+
+      // Example: Fetch the content from the server
+      function crawlPage() {
+        const urlInput = document.getElementById("urlInput");
+        const payingCustomer =
+          document.getElementById("payingCustomer").checked;
+
+        const url = encodeURIComponent(urlInput.value);
+        const payingCustomerParam = payingCustomer
+          ? "&paying_customer=true"
+          : "";
+
+        console.log(`sending request to /append, url=${url}`);
+
+        fetch(`http://localhost:8000/crawl?url=${url}${payingCustomerParam}`)
+          .then((response) => response.text())
+          .then((content) => updateContent(content))
+          .catch((error) => {
+            console.error("Error fetching content:", error);
+            document.getElementById(
+              "result"
+            ).innerHTML = `<p>Error crawling page. Please try again.</p>`;
+          });
+      }
+    </script>
+  </body>
+</html>
